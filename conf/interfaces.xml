@@ -1,0 +1,51 @@
+<interfaces>
+  <interface>	
+		<id>rest test</id>
+		<sleeponerror>120000</sleeponerror>
+		
+		<input>
+			<reader>kiji.reader.FileReader</reader>
+			<inputfile>./data/rest_in/*</inputfile>
+			<archivedirectory>./data/archive/</archivedirectory>
+			<fileencoding>UTF-8</fileencoding>
+			<filelock>true</filelock>
+			<binary>false</binary>
+			<pollinterval>1000</pollinterval>
+			<sleeponerror>120000</sleeponerror>
+		</input>
+		
+		<processing>
+			<sorting>false</sorting>
+			<debulking>false</debulking>
+		</processing>
+		
+		<output>
+			<writer>kiji.writer.JdbcWriter</writer>
+			<jdbcdriver>org.h2.Driver</jdbcdriver>
+			<jdbcurl>jdbc:h2:~/test</jdbcurl>
+			<user>sa</user>
+			<password></password>
+			<transactional>true</transactional>
+			<interfacetable>INTERFACE_WRITER_TABLE</interfacetable>
+		</output>
+		<output>
+			<writer>kiji.writer.JMSWriter</writer>
+			<jmsprovider>ACTIVEMQ</jmsprovider>
+			<jmsurl>tcp://localhost:61616</jmsurl>
+			<user></user>
+			<password></password>
+			<transactional>true</transactional>
+			<queue>myTestQueue</queue>
+		</output>
+		<output>
+			<writer>kiji.writer.RestWriter</writer>
+			<user>kermit</user>
+			<password>kermit</password>
+			<url>http://localhost:8080/activiti-rest/service/process-instance</url>
+		</output>
+		org.h2.Driver
+		
+  </interface>
+  
+  
+</interfaces>

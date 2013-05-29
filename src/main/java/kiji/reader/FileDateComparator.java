@@ -1,5 +1,5 @@
 /*
-
+ * this class expects 2 file objects and compares their last modified date
  */
 
 package kiji.reader;
@@ -9,8 +9,9 @@ import java.util.Comparator;
 
 /**
  *
- * @author Christian.Witschel
+ * @author c.witschel@gmail.com
  */
+@SuppressWarnings("rawtypes")
 public class FileDateComparator implements Comparator{
 
     public int compare(Object o1, Object o2) {

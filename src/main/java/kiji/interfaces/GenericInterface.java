@@ -3,8 +3,6 @@
  */
 package kiji.interfaces;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import kiji.data.GenericData;
@@ -68,7 +66,7 @@ public class GenericInterface extends Thread implements Interface {
         }
 
         if (rootNode.getChildrenCount(INPUT) > 0) {
-            Collection col = rootNode.getChildren(INPUT);
+            Collection<Node> col = rootNode.getChildren(INPUT);
             Iterator iter = col.iterator();
             inputNodes = new Node[col.size()];
             readers = new Reader[col.size()];
@@ -95,7 +93,7 @@ public class GenericInterface extends Thread implements Interface {
         }
         
          if (rootNode.getChildrenCount(TRANSFORM) > 0) {
-            Collection col = rootNode.getChildren(TRANSFORM);
+            Collection<Node> col = rootNode.getChildren(TRANSFORM);
             Iterator iter = col.iterator();
             transformerNodes = new Node[col.size()];
             transformers = new Transformer[col.size()];
@@ -125,7 +123,7 @@ public class GenericInterface extends Thread implements Interface {
         }
 
         if (rootNode.getChildrenCount(OUTPUT) > 0) {
-            Collection col = rootNode.getChildren(OUTPUT);
+            Collection<Node> col = rootNode.getChildren(OUTPUT);
             Iterator iter = col.iterator();
             outputNodes = new Node[col.size()];
             writers = new Writer[col.size()];

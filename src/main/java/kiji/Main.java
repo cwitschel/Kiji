@@ -11,7 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 /**
  *
- * @author Christian.Witschel
+ * @author c.witschel@gmail.com
  */
 public class Main {
 

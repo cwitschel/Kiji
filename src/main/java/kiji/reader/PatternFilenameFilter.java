@@ -21,7 +21,6 @@ public class PatternFilenameFilter implements FilenameFilter{
         filePattern = p;
     }
 
-    @Override
     public boolean accept(File dir, String name) {
         if (name.endsWith(".part"))
             return false;

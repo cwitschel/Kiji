@@ -1,6 +1,6 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This Readers purpose is to receive data from an JMS source.
+ * 
  */
 package kiji.reader;
 
@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author christian
+ * @author c.witschel@gmail.com
  */
 public class JmsReader implements Reader {
 
@@ -45,6 +45,12 @@ public class JmsReader implements Reader {
     private GenericData data;
     private long pollInterval;
 
+    /*
+     * This method needs to be called before getNext to have the appropriate configuration in place 
+     * and the connection to jms source setup.
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#setConfig(org.apache.commons.configuration.HierarchicalConfiguration.Node)
+     */
     public void setConfig(Node n) throws Exception {
         rootNode = n;
 
@@ -92,6 +98,11 @@ public class JmsReader implements Reader {
 
     }
 
+    /*
+     * This method gets the next message from the jms source
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#getNext()
+     */
     public GenericData getNext() throws Exception {
         // Wait for a message
         message = consumer.receive(pollInterval);
@@ -102,7 +113,7 @@ public class JmsReader implements Reader {
         }
 
         MetaData metadata = new MetaData();
-        Enumeration en = message.getPropertyNames();
+        Enumeration<String> en = message.getPropertyNames();
         while (en.hasMoreElements()){
             String key = (String)en.nextElement();
             metadata.put(key, message.getStringProperty(key));
@@ -155,11 +166,21 @@ public class JmsReader implements Reader {
         return data;
     }
 
+    /*
+     * commit the transaction and therefore make the messages be consumed in the jms source
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#commit()
+     */
     public void commit() throws Exception {
         message.acknowledge();
         session.commit();
     }
 
+    /*
+     * Rollback of the current transaction. This Reader must then be initialized once more.
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#rollback()
+     */
     public void rollback() throws Exception {
         message = null;
         session.rollback();

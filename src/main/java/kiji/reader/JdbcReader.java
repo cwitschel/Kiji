@@ -1,6 +1,7 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This class is used to read from a JDBC data source.
+ * It does read from and expect an interface table. The table name can be configured.
+ * if the table is not existing the reader will try to create it. 
  */
 
 package kiji.reader;
@@ -11,17 +12,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
 import kiji.data.GenericData;
 import kiji.data.MetaData;
-import kiji.interfaces.FatalException;
 import kiji.util.ParameterCheck;
 import org.apache.commons.configuration.HierarchicalConfiguration.Node;
 import org.apache.log4j.Logger;
 
 /**
  *
- * @author christian
+ * @author c.witschel@gmail.com
  */
 public class JdbcReader implements Reader{
 

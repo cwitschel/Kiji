@@ -14,11 +14,16 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author Christian.Witschel
+ * @author c.witschel@gmail.com
  */
+@SuppressWarnings("rawtypes")
 public class MetaData extends HashMap{
 
-    Logger logger = Logger.getLogger(MetaData.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 6382184518734075129L;
+	Logger logger = Logger.getLogger(MetaData.class);
 
     //this method is for testing, loading the meta data from a file
     public void loadFromFile(File f){

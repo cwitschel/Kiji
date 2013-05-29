@@ -186,10 +186,8 @@ public class JmsReader implements Reader {
         session.rollback();
     }
 
-    @Override
-    public void finalize(){
+    public void shutdown(){
         try {
-            super.finalize();
             consumer.close();
             session.close();
             connection.close();

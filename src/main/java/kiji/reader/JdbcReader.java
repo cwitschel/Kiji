@@ -232,5 +232,16 @@ public class JdbcReader implements Reader{
         return true;
     }
 
-
+    /*
+     * close the db connection
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#shutdown()
+     */
+    public void shutdown(){
+        try {
+            connection.close();
+        } catch (Throwable ex) {
+            logger.error("Exception closing DB Connection",ex);
+        }
+    }
 }

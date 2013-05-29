@@ -1,6 +1,5 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This class opens a server socket and listens on the configured port for connections
  */
 
 package kiji.reader;
@@ -21,7 +20,7 @@ import org.json.JSONObject;
 
 /**
  *
- * @author christian
+ * @author c.witschel@gmail.com
  */
 public class SocketReader implements Reader{
 
@@ -37,7 +36,13 @@ public class SocketReader implements Reader{
         server = new ServerSocket(Integer.parseInt(ParameterCheck.getParameter(rootNode, PORT)));
         server.setSoTimeout(Integer.parseInt(ParameterCheck.getParameter(rootNode, TIMEOUT)));
     }
-
+    
+    /*
+     * takes the next socket connection from the listener and returns the data received
+     * this may block for a while depending on the sending system. use with caution.
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#getNext()
+     */
     public GenericData getNext() throws Exception {
         activeSocket = null;
         try{
@@ -80,6 +85,20 @@ public class SocketReader implements Reader{
 
     public void rollback() throws Exception {
         activeSocket.close();
+    }
+    
+    /*
+     * if not already closed the active Socket will be closed
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#shutdown()
+     */
+    public void shutdown(){
+        try {
+        	server.close();
+        	activeSocket.close();
+        } catch (Throwable ex) {
+            logger.error("Exception closing socket connection",ex);
+        }
     }
 
 }

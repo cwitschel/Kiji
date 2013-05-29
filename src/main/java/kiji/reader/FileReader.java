@@ -155,4 +155,17 @@ public class FileReader implements Reader{
     public void rollback() {
         currentFile = null;
     }
+    
+    /*
+     * there is nothing to do here, since no resources are held permanently during lifetime
+     * (non-Javadoc)
+     * @see kiji.reader.Reader#shutdown()
+     */
+    public void shutdown(){
+        try {
+     
+        } catch (Throwable ex) {
+            logger.error("Exception closing file Connection",ex);
+        }
+    }
 }

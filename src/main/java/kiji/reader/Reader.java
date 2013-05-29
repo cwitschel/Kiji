@@ -18,5 +18,6 @@ public interface Reader{
     //public GenericData getCurrent() throws Exception;
     public void commit() throws Exception;
     public void rollback() throws Exception;
+    public void shutdown();
 
 }

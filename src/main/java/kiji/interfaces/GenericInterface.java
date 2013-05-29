@@ -1,5 +1,11 @@
 /*
- * this is the super class of all interfaces
+ * this is the super class of all interfaces. it will perform reading transforming and writing of data
+ * depending on its configuration.
+ * you can configure more then one reader, transformation and writer.
+ * However there is no aggregation feature yet. Meaning each reader is used one after the other to 
+ * collect its next data chunk and then calls the configured transformers and writers.
+ * YOU CANNOT MERGE THE DATA OF DIFFERENT READERS in this version. 
+ * 
  */
 package kiji.interfaces;
 
@@ -15,7 +21,7 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author Christian.Witschel
+ * @author c.witschel@gmail.com
  */
 public class GenericInterface extends Thread implements Interface {
 
@@ -161,6 +167,13 @@ public class GenericInterface extends Thread implements Interface {
         logger.error("Interface " + name + " ready");
     }
 
+    /*
+     * this method keeps running the interface while the run option is true.
+     * basically it loops continuously through the configured readers initiating a transaction
+     * once it leaves the endless loop, it will shutdown all the readers and end this interface.
+     * (non-Javadoc)
+     * @see java.lang.Thread#run()
+     */
     public void run() {
         run = true;
         int i = 0;
@@ -177,6 +190,10 @@ public class GenericInterface extends Thread implements Interface {
                 setStatus("aborted with error");
                 break;
             }
+        }
+        //shutdown readers
+        for (int x = 0; x < readers.length; x++){
+        	readers[x].shutdown();
         }
     }
 
@@ -196,6 +213,11 @@ public class GenericInterface extends Thread implements Interface {
         setStatus("ended");
     }
 
+    /*
+     * first the reader is called to receive the next portion of data.
+     * then the configured transformers are called on order of configuration to transform the data
+     * last the configured writers are called to distribute the data to its targets.
+     */
     private void processTransaction(Reader reader) throws Exception {
         GenericData data = null;
         try {

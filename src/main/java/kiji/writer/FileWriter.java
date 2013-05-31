@@ -16,7 +16,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration.Node;
 
 /**
  *
- * @author Christian.Witschel
+ * @author c.witschel@gamil.com
  */
 public class FileWriter implements Writer {
 

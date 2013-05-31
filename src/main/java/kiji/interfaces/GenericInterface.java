@@ -42,7 +42,6 @@ public class GenericInterface extends Thread implements Interface {
     private Transformer[] transformers;
     private Writer[] writers;
     private boolean run = false;
-    private String name;
     private long sleepOnError;
     private static Logger logger = Logger.getLogger(GenericInterface.class.getName());
 
@@ -54,7 +53,7 @@ public class GenericInterface extends Thread implements Interface {
         }
     }
 
-    public void startup() {
+    public void startup() throws Exception {
 
         //initialize sleep on error
         if (rootNode.getChildrenCount(SLEEP_ON_ERROR) == 1) {
@@ -64,16 +63,16 @@ public class GenericInterface extends Thread implements Interface {
         }
 
         try {
-            name = ParameterCheck.getParameter(rootNode, ID);
+            String name = ParameterCheck.getParameter(rootNode, ID);
             setName(name);
         } catch (Exception ex) {
             logger.error("<" + ID + "> parameter nor specified", ex);
-            return;
+            throw new Exception("<" + ID + "> parameter nor specified", ex);
         }
 
         if (rootNode.getChildrenCount(INPUT) > 0) {
             Collection<Node> col = rootNode.getChildren(INPUT);
-            Iterator iter = col.iterator();
+            Iterator<Node> iter = col.iterator();
             inputNodes = new Node[col.size()];
             readers = new Reader[col.size()];
             int i = 0;
@@ -86,21 +85,24 @@ public class GenericInterface extends Thread implements Interface {
                     readers[i].setConfig(n);
                 } catch (InstantiationException ex) {
                     logger.error("Cannot create Reader", ex);
+                    throw new Exception("Cannot create Reader. Aborting interface "+getName(), ex);
                 } catch (IllegalAccessException ex) {
                     logger.error("Cannot create Reader", ex);
+                    throw new Exception("Cannot create Reader. Aborting interface "+getName(), ex);
                 } catch (Exception ex) {
                     logger.error("Cannot create Reader", ex);
+                    throw new Exception("Cannot create Reader. Aborting interface "+getName(), ex);
                 }
                 i++;
             }
         } else {
             logger.error("No <" + INPUT + "> tags specified for this interface. aborting.");
-            return;
+            throw new Exception("No <" + INPUT + "> tags specified for this interface. Aborting interface "+getName());
         }
         
          if (rootNode.getChildrenCount(TRANSFORM) > 0) {
             Collection<Node> col = rootNode.getChildren(TRANSFORM);
-            Iterator iter = col.iterator();
+            Iterator<Node> iter = col.iterator();
             transformerNodes = new Node[col.size()];
             transformers = new Transformer[col.size()];
             int i = 0;
@@ -113,16 +115,16 @@ public class GenericInterface extends Thread implements Interface {
                     transformers[i].setConfig(n);
                 } catch (InstantiationException ex) {
                     logger.error("Cannot create Transformer. Aborting", ex);
-                    return;
+                    throw new Exception("Cannot create Transformer. Aborting interface "+getName(), ex);
                 } catch (IllegalAccessException ex) {
                     logger.error("Cannot create Transformer. Aborting", ex);
-                    return;
+                    throw new Exception("Cannot create Transformer. Aborting interface "+getName(), ex);
                 } catch (ClassNotFoundException ex) {
                     logger.error("Cannot create Transformer, check config or classpath", ex);
-                    return;
+                    throw new Exception("Cannot create Transformer. Check config or classpath", ex);
                 } catch (Exception ex) {
                     logger.error("Cannot create Transformer. Aborting", ex);
-                    return;
+                    throw new Exception("Cannot create Transformer. Aborting interface "+getName(), ex);
                 }
                 i++;
             }
@@ -130,7 +132,7 @@ public class GenericInterface extends Thread implements Interface {
 
         if (rootNode.getChildrenCount(OUTPUT) > 0) {
             Collection<Node> col = rootNode.getChildren(OUTPUT);
-            Iterator iter = col.iterator();
+            Iterator<Node> iter = col.iterator();
             outputNodes = new Node[col.size()];
             writers = new Writer[col.size()];
             int i = 0;
@@ -143,28 +145,28 @@ public class GenericInterface extends Thread implements Interface {
                     writers[i].setConfig(n);
                 } catch (InstantiationException ex) {
                     logger.error("Cannot create Writer. Aborting", ex);
-                    return;
+                    throw new Exception("Cannot create Writer. Aborting interface "+getName(), ex);
                 } catch (IllegalAccessException ex) {
                     logger.error("Cannot create Writer. Aborting", ex);
-                    return;
+                    throw new Exception("Cannot create Writer. Aborting interface "+getName(), ex);
                 } catch (ClassNotFoundException ex) {
-                    logger.error("Cannot create Reader, check config or classpath", ex);
-                    return;
+                    logger.error("Cannot create Reader, Check config or classpath", ex);
+                    throw new Exception("Cannot create Writer. Check config or classpath", ex);
                 } catch (Exception ex) {
                     logger.error("Cannot create Writer. Aborting", ex);
-                    return;
+                    throw new Exception("Cannot create Writer. Aborting interface "+getName(), ex);
                 }
                 i++;
             }
         } else {
-            logger.error("No <" + OUTPUT + "> tags specified for this interface. Aborting.");
-            return;
+            logger.error("No <" + OUTPUT + "> tags specified for this interface. Aborting interface "+getName());
+            throw new Exception("No <" + OUTPUT + "> tags specified for this interface. Aborting interface "+getName());
         }
 
         setStatus("ready");
         start();
         setStatus("running");
-        logger.error("Interface " + name + " ready");
+        logger.info("Interface " + getName() + " started running");
     }
 
     /*
@@ -195,6 +197,8 @@ public class GenericInterface extends Thread implements Interface {
         for (int x = 0; x < readers.length; x++){
         	readers[x].shutdown();
         }
+        setStatus("ended");
+        logger.info("Interface " + getName() + " ended");
     }
 
     public String getStatus() {
@@ -210,7 +214,8 @@ public class GenericInterface extends Thread implements Interface {
     }
 
     public void shutdown() {
-        setStatus("ended");
+    	run = false;
+        setStatus("ending");
     }
 
     /*

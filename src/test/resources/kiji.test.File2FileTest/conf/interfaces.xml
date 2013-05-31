@@ -1,0 +1,24 @@
+<interfaces>
+  <interface>	
+		<id>file test</id>
+		<sleeponerror>1000</sleeponerror>
+		
+		<input>
+			<reader>kiji.reader.FileReader</reader>
+			<inputfile>in/*</inputfile>
+			<archivedirectory>archive/</archivedirectory>
+			<fileencoding>UTF-8</fileencoding>
+			<filelock>true</filelock>
+			<binary>false</binary>
+			<pollinterval>500</pollinterval>
+			<sleeponerror>1000</sleeponerror>
+		</input>
+		
+		<output>
+			<writer>kiji.writer.FileWriter</writer>
+			<outputdirectory>out/</outputdirectory>
+		</output>
+  </interface>
+  
+  
+</interfaces>

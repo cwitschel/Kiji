@@ -34,6 +34,7 @@ public class FileReader implements Reader{
     private File currentFile;
     private PatternFilenameFilter fileFilter;
     private long pollInterval;
+    private long housekeepingInterval;
     private MetaData metadata;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmssSSS");
 
@@ -125,6 +126,7 @@ public class FileReader implements Reader{
             metadata.put("timestamp", sdf.format(new Date()));
             is = new FileInputStream(list[0]);
             currentFile = list[0];
+            
             return new GenericData(getMetadata(), is);
         } catch (Exception ex) {
             logger.error("Exception getting next File", ex);
@@ -132,7 +134,12 @@ public class FileReader implements Reader{
         }
     }
 
-    public MetaData getMetadata() {
+    private void doHouseKeeping() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public MetaData getMetadata() {
         return metadata;
     }
 
@@ -149,6 +156,8 @@ public class FileReader implements Reader{
         }
         else{
             currentFile = null;
+            //do housekeeping
+            doHouseKeeping();
         }
     }
 

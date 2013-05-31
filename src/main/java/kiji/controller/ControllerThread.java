@@ -27,14 +27,14 @@ public class ControllerThread extends Thread {
 	public static boolean stop = false;
 	private static ControllerThread me;
 
-	private ControllerThread() {
+	private ControllerThread() throws Exception {
 		// load configuration
 		try {
 			adminConfig = new XMLConfiguration();
 			adminConfig.load(new FileInputStream("conf/general.xml"));
 		} catch (Exception ex) {
 			logger.error("Cannot load general configuration", ex);
-			System.exit(1);
+			throw new Exception("Cannot load general configuration", ex);
 		}
 
 		try {
@@ -42,13 +42,18 @@ public class ControllerThread extends Thread {
 			interfacesConfig.load(new FileInputStream("conf/interfaces.xml"));
 		} catch (Exception ex) {
 			logger.error("Cannot load interfaces configuration", ex);
-			System.exit(1);
+			throw new Exception("Cannot load interfaces configuration", ex);
 		}
 	}
 
 	public static ControllerThread getInstance() {
-		if (me == null)
-			me = new ControllerThread();
+		if (me == null){
+			try {
+				me = new ControllerThread();
+			} catch (Exception e) {
+				return null;
+			}
+		}
 		return me;
 	}
 
@@ -101,16 +106,27 @@ public class ControllerThread extends Thread {
 	 */
 	public void startup() {
 
+		//make sure this method is only called once during lifetime
+		if (interfaces == null)
+			interfaces = new HashSet<Interface>(); 
+		else
+			return;
+		
 		Node root = interfacesConfig.getRoot();
-		Iterator iter = root.getChildren("interface").iterator();
+		Iterator<Node> iter = root.getChildren("interface").iterator();
 		while (iter.hasNext()) {
 			Node interfaceNode = (Node) iter.next();
 
-			// Interface i = (Interface)
-			// Class.forName((String)((Node)interfaceNode.getChildren("class").get(0)).getValue()).newInstance();
 			Interface i = new GenericInterface();
 			i.setConfig(interfaceNode);
-			i.startup();
+			try {
+				i.startup();
+			} catch (Exception e) {
+				logger.error("Could not start interface " + ((GenericInterface)i).getName(), e);
+				continue;
+			}
+			interfaces.add(i);
+			logger.info("started interface " + ((GenericInterface)i).getName());
 		}
 	}
 
@@ -120,7 +136,7 @@ public class ControllerThread extends Thread {
 	public void shutdown() {
 
 		stop = true;
-
+		
 		while (interfaces.size() > 0) {
 			Iterator iter = interfaces.iterator();
 			while (iter.hasNext()) {
@@ -129,11 +145,22 @@ public class ControllerThread extends Thread {
 				if (it == null) {
 					iter.remove();
 				} else if (it.isRunning()) {
-					it.shutdown();
+					it.shutdown();	
+					System.out.println("interface " + ((GenericInterface)it).getName() + " is still running. Initiating shutdown.");
 				} else {
 					iter.remove();
 				}
 			}
+			
+			//give the interfaces some time to shutdown
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				//no big deal
+				e.printStackTrace();
+			}
 		}
+		
+		
 	}
 }

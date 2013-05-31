@@ -27,6 +27,5 @@ public class Main {
         logger.info("Adapter version $Rev: 30 $:");
  
         ControllerThread.getInstance().start();
-
     }
 }

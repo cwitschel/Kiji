@@ -12,7 +12,7 @@ import org.apache.commons.configuration.HierarchicalConfiguration.Node;
  */
 public interface Interface {
 
-    public void startup();
+    public void startup() throws Exception;
     public String getStatus();
     public boolean isRunning();
     public void setConfig(Node n);

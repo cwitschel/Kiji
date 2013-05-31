@@ -1,5 +1,5 @@
 /*
- * Generic Onject holding all the data that is passed around inside the
+ * Generic Object holding all the data that is passed around inside the
  * Framework
  */
 package kiji.data;
@@ -43,14 +43,24 @@ public class GenericData {
         logger.debug("Input = "+new String(input));
     }
 
+    /*
+     * returns an inputstream of the data represented by this object
+     */
     public InputStream getInputAsStream() {
         return new ByteArrayInputStream(input);
     }
 
+    /*
+     * returns a bytearray of the data represented by this object
+     */
     public byte[] getInputAsByteArray() {
         return input;
     }
 
+    /*
+     * returns the meta data related to this data object
+     * meta data holds some context information about the data. for example the original file name
+     */
     public MetaData getMetadata() {
         if (metadata == null) {
             metadata = new MetaData();
